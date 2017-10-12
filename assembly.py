@@ -1,26 +1,25 @@
+from math import sqrt
 import numpy as np
 import scipy
 
 __author__ = 'Siarshai'
 
 
-def generate_simple_grid_of_neurons(rows=5, columns=5):
-    W = []
+def generate_simple_grid_of_neurons(rows=5, columns=5, squared_euclidean=True):
+
+    W = np.zeros(shape=(rows*columns, 2))
     for i in range(rows):
         for j in range(columns):
-            ix = float(i - 1)/rows
-            jy = float(j - 1)/columns
-            W.append([ix, jy])
-    W = np.asarray(W)
-    D = []
+            W[i*columns + j, 0] = float(i - 1)/rows
+            W[i*columns + j, 1] = float(j - 1)/columns
+
+    D = np.zeros(shape=(rows*columns, rows*columns))
     for i in range(rows):
         for j in range(columns):
-            sub_D = []
             for k in range(rows):
                 for l in range(columns):
-                    sub_D.append((i-k)**2 + (j-l)**2)
-            D.append(np.asarray(sub_D))
-    D = np.asarray(D)
+                    D[i*columns + j, k*columns + l] = (i-k)**2 + (j-l)**2 if squared_euclidean else sqrt((i-k)**2 + (j-l)**2)
+
     grid = []
     for i in range(columns*rows):
         row = i // rows
@@ -28,7 +27,9 @@ def generate_simple_grid_of_neurons(rows=5, columns=5):
             grid.append((i, i - 1))
         if i - rows >= 0:
             grid.append((i, i - rows))
+
     return W, D, grid
+
 
 def generate_simple_tree_of_neurons(branching_factor=2, height=4):
 
